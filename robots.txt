@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://wese3112.github.io/mouse-bounce-tester/sitemap.xml
