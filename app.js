@@ -1,19 +1,16 @@
+"use strict";
+
 const svgNs = "http://www.w3.org/2000/svg";
+const themeStorageKey = "mouse-bounce-theme";
+const pathEnabledStorageKey = "mouse-bounce-path-enabled";
 
 const drawingSurface = document.getElementById("drawing-surface");
 const mouseTrail = document.getElementById("mouse-trail");
+const markerLayer = document.getElementById("marker-layer");
 const clearCanvasButton = document.getElementById("clear-canvas-button");
 const enablePathToggle = document.getElementById("enable-path-toggle");
 const themeToggleButton = document.getElementById("theme-toggle-button");
 const rootElement = document.documentElement;
-const themeStorageKey = "mouse-bounce-theme";
-
-const counters = {
-  leftPress: 0,
-  leftRelease: 0,
-  rightPress: 0,
-  rightRelease: 0
-};
 
 const counterElements = {
   leftPress: document.getElementById("left-press-count"),
@@ -22,9 +19,20 @@ const counterElements = {
   rightRelease: document.getElementById("right-release-count")
 };
 
+if (!drawingSurface || !mouseTrail || !markerLayer || !clearCanvasButton || !enablePathToggle || !themeToggleButton) {
+  throw new Error("Initialization failed: required UI elements are missing.");
+}
+
+const counters = {
+  leftPress: 0,
+  leftRelease: 0,
+  rightPress: 0,
+  rightRelease: 0
+};
+
 let pathData = "";
 let lastPoint = null;
-let isPathEnabled = enablePathToggle.checked;
+let isPathEnabled = false;
 let markerColors = {
   left: "",
   right: ""
@@ -45,8 +53,12 @@ function updateThemeButton(theme) {
 }
 
 function recolorMarkers() {
-  drawingSurface.querySelectorAll("circle").forEach((marker) => {
+  markerLayer.querySelectorAll("circle").forEach((marker) => {
     const button = marker.getAttribute("data-button");
+    if (!button) {
+      return;
+    }
+
     const state = marker.getAttribute("data-state");
     const color = button === "left" ? markerColors.left : markerColors.right;
     marker.setAttribute("stroke", color);
@@ -82,14 +94,36 @@ function loadTheme() {
   return "light";
 }
 
+function savePathEnabledPreference(value) {
+  try {
+    localStorage.setItem(pathEnabledStorageKey, value ? "1" : "0");
+  } catch {
+    // Ignore storage failures and continue with in-memory state.
+  }
+}
+
+function loadPathEnabledPreference(defaultValue) {
+  try {
+    const stored = localStorage.getItem(pathEnabledStorageKey);
+    if (stored === "1") {
+      return true;
+    }
+
+    if (stored === "0") {
+      return false;
+    }
+  } catch {
+    // Continue with provided default value.
+  }
+
+  return defaultValue;
+}
+
 function clearDrawing() {
   pathData = "";
   lastPoint = null;
   mouseTrail.setAttribute("d", "");
-
-  drawingSurface.querySelectorAll("circle").forEach((marker) => {
-    marker.remove();
-  });
+  markerLayer.replaceChildren();
 }
 
 function updateCounter(name) {
@@ -129,7 +163,7 @@ function createMarker(point, button, isPress) {
   marker.setAttribute("fill", isPress ? color : "none");
   marker.setAttribute("data-button", button);
   marker.setAttribute("data-state", isPress ? "press" : "release");
-  drawingSurface.appendChild(marker);
+  markerLayer.appendChild(marker);
 }
 
 function handleTrail(event) {
@@ -184,6 +218,8 @@ function handleRelease(event) {
   }
 }
 
+isPathEnabled = loadPathEnabledPreference(enablePathToggle.checked);
+enablePathToggle.checked = isPathEnabled;
 applyTheme(loadTheme());
 
 drawingSurface.addEventListener("mousemove", handleTrail);
@@ -198,6 +234,7 @@ clearCanvasButton.addEventListener("click", clearDrawing);
 enablePathToggle.addEventListener("change", () => {
   isPathEnabled = enablePathToggle.checked;
   lastPoint = null;
+  savePathEnabledPreference(isPathEnabled);
 });
 
 themeToggleButton.addEventListener("click", () => {

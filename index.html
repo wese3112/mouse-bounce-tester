@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Mouse Bounce Tester helps detect mouse switch bounce by tracking left/right press and release counts with a visual click map.">
   <title>Mouse Bounce Tester</title>
   <link rel="stylesheet" href="styles.css">
 </head>
@@ -32,8 +33,9 @@
       </div>
     </header>
     <section class="canvas-wrap">
-      <svg id="drawing-surface" aria-label="Mouse drawing surface">
+      <svg id="drawing-surface" role="img" aria-label="Mouse movement and click map">
         <path id="mouse-trail"></path>
+        <g id="marker-layer"></g>
       </svg>
     </section>
   </main>
