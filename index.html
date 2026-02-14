@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mouse Bounce Tester</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="app">
+    <header class="status-bar">
+      <h1 class="app-title">Mouse Bounce Tester</h1>
+      <div class="toolbar" aria-label="Controls and legend">
+        <div class="counter-chips" aria-label="Click counters">
+          <p class="chip"><span id="left-press-count">0</span>L down</p>
+          <p class="chip"><span id="left-release-count">0</span>L up</p>
+          <p class="chip"><span id="right-press-count">0</span>R down</p>
+          <p class="chip"><span id="right-release-count">0</span>R up</p>
+        </div>
+        <div class="legend-inline" aria-label="Marker legend">
+          <p><span class="legend-dot left press" aria-hidden="true"></span>L press</p>
+          <p><span class="legend-dot left release" aria-hidden="true"></span>L release</p>
+          <p><span class="legend-dot right press" aria-hidden="true"></span>R press</p>
+          <p><span class="legend-dot right release" aria-hidden="true"></span>R release</p>
+        </div>
+        <label class="path-toggle" for="enable-path-toggle">
+          <input id="enable-path-toggle" type="checkbox">
+          <span>Enable path</span>
+        </label>
+        <button id="theme-toggle-button" type="button" aria-pressed="false">Dark theme</button>
+        <button id="clear-canvas-button" type="button">Clear (Space)</button>
+      </div>
+    </header>
+    <section class="canvas-wrap">
+      <svg id="drawing-surface" aria-label="Mouse drawing surface">
+        <path id="mouse-trail"></path>
+      </svg>
+    </section>
+  </main>
+  <script src="app.js"></script>
+</body>
+</html>
